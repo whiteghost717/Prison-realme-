@@ -8,11 +8,6 @@ name: Build PrisonRealm
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: PrisonRealm
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,24 +18,18 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Check project files
         run: ls -la
 
       - name: Build plugin
-        run: |
-          if [ -f ./gradlew ]; then
-            chmod +x ./gradlew
-            ./gradlew build
-          elif [ -f ./gradle/wrapper/gradle-wrapper.properties ]; then
-            gradle build
-          else
-            echo "Gradle wrapper is missing from PrisonRealm."
-            exit 1
-          fi
+        run: gradle build
 
       - name: Upload plugin JAR
         uses: actions/upload-artifact@v4
         with:
           name: PrisonRealm-JAR
-          path: PrisonRealm/build/libs/*.jar
+          path: build/libs/*.jar
           if-no-files-found: error
